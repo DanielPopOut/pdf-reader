@@ -13,21 +13,23 @@ client = OpenAI(
     api_key=OPEN_AI_API_KEY,
 )
 
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route('/input', methods=['POST'])
+
+@app.route("/input", methods=["POST"])
 def get_input():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.json
 
+        messages = data["messages"]
+
         chat_completion = client.chat.completions.create(
-            messages=data.messages,
+            messages=messages,
             model="gpt-3.5-turbo",
         )
 
-        return chat_completion.choices[0].message.content
-
-
-
+        result = chat_completion.choices[0].message.content
+        return {"result": result}
