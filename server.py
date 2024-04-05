@@ -2,6 +2,7 @@ from flask import Flask, request
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import pikepdf
 
 load_dotenv()  # take environment variables from .env.
 OPEN_AI_API_KEY = os.environ.get("OPEN_AI_API_KEY")
@@ -33,3 +34,12 @@ def get_input():
 
         result = chat_completion.choices[0].message.content
         return {"result": result}
+
+
+@app.route("/upload_pdf", methods=["POST"])
+def get_input():
+    if request.method == "POST":
+        file = request.files.get('file')
+
+        with pikepdf.open(file) as pdf:
+            return pdf.pages[0]
