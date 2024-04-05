@@ -36,6 +36,7 @@ def get_input():
         return {"result": result}
 
 
+
 @app.route("/upload_pdf", methods=["POST"])
 def get_input():
     if request.method == "POST":
@@ -43,3 +44,19 @@ def get_input():
 
         with pikepdf.open(file) as pdf:
             return pdf.pages[0]
+
+def summarize_text(text: str):
+    messageBase = {
+        "role": "system",
+        "content": f"Please summarize this text\n\n{text}",
+    }
+    allMessages = [messageBase]
+
+    chat_completion = client.chat.completions.create(
+        messages=allMessages,
+        model="gpt-3.5-turbo",
+    )
+
+    result = chat_completion.choices[0].message.content
+    return {"result": result}
+
