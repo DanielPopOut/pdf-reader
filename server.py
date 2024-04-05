@@ -33,3 +33,19 @@ def get_input():
 
         result = chat_completion.choices[0].message.content
         return {"result": result}
+
+
+def summarize_text(text: str):
+    messageBase = {
+        "role": "system",
+        "content": f"Please summarize this text\n\n{text}",
+    }
+    allMessages = [messageBase]
+
+    chat_completion = client.chat.completions.create(
+        messages=allMessages,
+        model="gpt-3.5-turbo",
+    )
+
+    result = chat_completion.choices[0].message.content
+    return {"result": result}
