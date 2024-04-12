@@ -65,10 +65,10 @@ def get_input():
         return {"result": result}
 
 
-def summarize_text(text: str):
+def generate_roadmap(text: str):
     messageBase = {
         "role": "system",
-        "content": f"Please summarize this text\n\n{text}",
+        "content": f"Give me a 10 step roadmap to learning {text}. Break each step into a chapter with title and 3 sub portions",
     }
     allMessages = [messageBase]
 
@@ -78,7 +78,7 @@ def summarize_text(text: str):
     )
 
     result = chat_completion.choices[0].message.content
-    return {"result": result}
+    return result
 
 
 learning_form = """
@@ -110,5 +110,5 @@ def get_roadmap():
         ## Ask chatgpt the roadmap
 
         ## format the roadmap
-
-        return {"result": body}
+        roadmap = generate_roadmap(body)
+        return {"result": roadmap}
