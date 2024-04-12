@@ -3,6 +3,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import PyPDF2
+import graphviz
 
 load_dotenv()  # take environment variables from .env.
 OPEN_AI_API_KEY = os.environ.get("OPEN_AI_API_KEY")
@@ -68,7 +69,22 @@ def get_input():
 def generate_roadmap(text: str):
     messageBase = {
         "role": "system",
-        "content": f"Give me a 10 step roadmap to learning {text}. Break each step into a chapter with title and 3 sub portions",
+        "content": f"Give me a 10 step roadmap to learning {text}. Break each step 3 sub portions.",
+    }
+    allMessages = [messageBase]
+
+    chat_completion = client.chat.completions.create(
+        messages=allMessages,
+        model="gpt-3.5-turbo",
+    )
+
+    result = chat_completion.choices[0].message.content
+    return result
+
+def generate_graph(result):
+    messageBase = {
+        "role": "system",
+        "content": f"Take each step from the roadmap and create a graph using networkx. {result}",
     }
     allMessages = [messageBase]
 
@@ -111,4 +127,8 @@ def get_roadmap():
 
         ## format the roadmap
         roadmap = generate_roadmap(body)
-        return {"result": roadmap}
+        graph = generate_graph(roadmap)
+        # # render the graph as jpg
+        # dot = graphviz.Source(graph)
+        # graph_as_jpg = dot.render('roadmap', format='jpeg', view=True)
+        return graph
