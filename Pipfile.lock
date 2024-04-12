@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "df70e565f05d2076bc9a87d1b5dd4f5b67442fa36663965eec5e4f2a022fc2c0"
+            "sha256": "a115ec3d854eb5f3fc03f8e44be96c76ca27275e935dcf5e47b1e092fef89e2f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -189,12 +189,12 @@
         },
         "openai": {
             "hashes": [
-                "sha256:58922c785d167458b46e3c76e7b1bc2306f313ee9b71791e84cbf590abe160f2",
-                "sha256:77ef3db6110071f7154859e234250fb945a36554207a30a4491092eadb73fcb5"
+                "sha256:46a435380921e42dae218d04d6dd0e89a30d7f3b9d8a778d5887f78003cf9354",
+                "sha256:c93d5efe5b73b6cb72c4cd31823852d2e7c84a138c0af3cbe4a8eb32b1164ab2"
             ],
             "index": "pypi",
             "markers": "python_full_version >= '3.7.1'",
-            "version": "==1.16.1"
+            "version": "==1.16.2"
         },
         "pydantic": {
             "hashes": [
@@ -288,6 +288,15 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==2.16.3"
+        },
+        "pypdf2": {
+            "hashes": [
+                "sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440",
+                "sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.6'",
+            "version": "==3.0.1"
         },
         "python-dotenv": {
             "hashes": [

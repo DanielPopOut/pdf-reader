@@ -7,6 +7,7 @@ name = "pypi"
 flask = "*"
 openai = "*"
 python-dotenv = "*"
+pypdf2 = "*"
 
 [dev-packages]
 
