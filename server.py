@@ -84,7 +84,7 @@ def generate_roadmap(text: str):
 def generate_graph(result):
     messageBase = {
         "role": "system",
-        "content": f"Take each step from the roadmap and create a graph using networkx. {result}",
+        "content": f"Take each step from the roadmap and create a graph using svg: {result}",
     }
     allMessages = [messageBase]
 
