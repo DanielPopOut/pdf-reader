@@ -79,3 +79,36 @@ def summarize_text(text: str):
 
     result = chat_completion.choices[0].message.content
     return {"result": result}
+
+
+learning_form = """
+<div> 
+<form style="width:300px;margin:auto;" action="/get_roadmap" method="post" enctype="multipart/form-data">
+    <label for="file">What do you want to learn:</label>
+    <input id="query" name="query">
+    <br>
+    <input type="submit" value="Submit">
+</form>
+</div>
+"""
+
+
+# Step 1 show the input
+@app.route("/learn")
+def learning_form_fn():
+    return learning_form
+
+
+# Step 2 get the input and retrieve the roadmap
+
+
+@app.route("/get_roadmap", methods=["POST"])
+def get_roadmap():
+    if request.method == "POST":
+        body = request.form.get("query")
+
+        ## Ask chatgpt the roadmap
+
+        ## format the roadmap
+
+        return {"result": body}
