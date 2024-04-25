@@ -156,7 +156,7 @@ def filter_and_propose_pizzas(messages):
     return False
 
 
-question_to_ask = """Anything else? (no to generate propositions)"""
+question_to_ask = """Anything else"""
 
 
 def continue_chat_with_user(messages):
