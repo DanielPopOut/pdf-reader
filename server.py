@@ -3,7 +3,6 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import PyPDF2
-import graphviz
 
 load_dotenv()  # take environment variables from .env.
 OPEN_AI_API_KEY = os.environ.get("OPEN_AI_API_KEY")
@@ -81,6 +80,7 @@ def generate_roadmap(text: str):
     result = chat_completion.choices[0].message.content
     return result
 
+
 def generate_graph(result):
     messageBase = {
         "role": "system",
@@ -135,3 +135,62 @@ def get_roadmap():
         # dot = graphviz.Source(graph)
         # graph_as_jpg = dot.render('roadmap', format='jpeg', view=True)
         return graph
+
+
+def check_user_preferences_are_done(messages):
+    for message in messages:
+        if "yes" in message or "no" in message:
+            return True
+    return False
+
+
+def filter_and_propose_pizzas(messages):
+    # for message in messages:
+    #     if "yes" in message or "no" in message:
+    #         return True
+
+    chat_completion = client.chat.completions.create(
+        messages=messages,
+        model="gpt-3.5-turbo",
+    )
+    return False
+
+
+question_to_ask = """Anything else? (no to generate propositions)"""
+
+
+def continue_chat_with_user(messages):
+    # for message in messages:
+    #     if "yes" in message or "no" in message:
+    #         return True
+    systemPrompt = f'''You are a pizza waiter and you need to get the user's preferences.
+You need to know the size, toppings, and crust.
+Ask the questions one by one.
+Once the user has expressed his preferences, ask him if he is done with this very specific question "{question_to_ask}"'''
+    messages_to_use = [{"role": "system", "content": systemPrompt}] + messages
+    chat_completion = client.chat.completions.create(
+        messages=messages_to_use,
+        model="gpt-3.5-turbo",
+    )
+    return chat_completion.choices[0].message.content
+
+
+# Pizza project
+@app.route("/pizza_bot", methods=["POST"])
+def handle_pizza_messages():
+    if request.method == "POST":
+        data = request.json
+
+        messages = data["messages"]
+
+        ## check if user has finished expressing his preferences
+        has_user_expressed_preferences = check_user_preferences_are_done(messages)
+        ## if yes, generate the order
+        if has_user_expressed_preferences:
+            result = filter_and_propose_pizzas(messages)
+            return {"result": result}
+        else:
+            ## if no, ask for more preferences
+
+            result = continue_chat_with_user(messages)
+            return {"result": result}
