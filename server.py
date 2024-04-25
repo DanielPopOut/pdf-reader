@@ -138,17 +138,27 @@ def get_roadmap():
 
 
 def check_user_preferences_are_done(messages):
-    for message in messages:
-        if "yes" in message or "no" in message:
+    # if we have one message from the bot and it contains question_to_ask and the next message contains no then we are done
+    if len(messages) > 1:
+        last_user_message = messages[-1]
+        last_bot_message = messages[-2]
+        print(
+            last_user_message,
+            last_bot_message,
+            "no" in last_user_message["content"].lower(),
+        )
+        if (question_to_ask.lower()) in last_bot_message[
+            "content"
+        ].lower() and "no" in last_user_message["content"].lower():
             return True
     return False
 
 
 def filter_and_propose_pizzas(messages):
-    # for message in messages:
-    #     if "yes" in message or "no" in message:
-    #         return True
+    # finding bot message with anything else inside
+    # checking if next user message is no
 
+    ##
     chat_completion = client.chat.completions.create(
         messages=messages,
         model="gpt-3.5-turbo",
@@ -160,9 +170,6 @@ question_to_ask = """Anything else"""
 
 
 def continue_chat_with_user(messages):
-    # for message in messages:
-    #     if "yes" in message or "no" in message:
-    #         return True
     systemPrompt = f'''You are a pizza waiter and you need to get the user's preferences.
 You need to know the size, toppings, and crust.
 Ask the questions one by one.
@@ -187,8 +194,7 @@ def handle_pizza_messages():
         has_user_expressed_preferences = check_user_preferences_are_done(messages)
         ## if yes, generate the order
         if has_user_expressed_preferences:
-            result = filter_and_propose_pizzas(messages)
-            return {"result": result}
+            return {"result": "hello"}
         else:
             ## if no, ask for more preferences
 
