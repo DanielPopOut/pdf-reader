@@ -155,15 +155,118 @@ def check_user_preferences_are_done(messages):
 
 
 def filter_and_propose_pizzas(messages):
-    # finding bot message with anything else inside
-    # checking if next user message is no
+    systemPrompt = f"""You are a python expert in charge of writing a filter function to filter pizzas.
+    Pizzas have this format : 
+  {{
+            "name": "Pumpkin and Sage",
+            "ingredients": ["Pumpkin Puree", "Mozzarella Cheese", "Sage", "Caramelized Onions", "Pepitas"],
+            "rating": 4.0,
+            "price": 12.99,
+            "type": "Gourmet",
+            "vegetarian": true,
+            "gluten_free": true,
+            "vegan": true,
+            "allergies": []
+        }}
 
-    ##
+        All the possible ingredients are : [
+        "Chocolate",
+    "Tomato Sauce",
+    "Mozzarella Cheese",
+    "Fresh Basil",
+    "Pepperoni Slices",
+    "Ham",
+    "Mushrooms",
+    "Artichokes",
+    "Olives",
+    "BBQ Sauce",
+    "Grilled Chicken",
+    "Red Onions",
+    "Cilantro",
+    "Bell Peppers",
+    "Black Olives",
+    "Vegan Cheese",
+    "Spinach",
+    "Pineapple",
+    "Buffalo Sauce",
+    "Blue Cheese Crumbles",
+    "Portobello Mushrooms",
+    "Shiitake Mushrooms",
+    "Oregano",
+    "Feta Cheese",
+    "Pesto Sauce",
+    "Cherry Tomatoes",
+    "Parmesan",
+    "Pepperoni",
+    "Sausage",
+    "Ricotta Cheese",
+    "Garlic",
+    "Olive Oil",
+    "Alfredo Sauce",
+    "Broccoli",
+    "Bacon",
+    "Eggs",
+    "White Truffle Oil",
+    "Mixed Mushrooms",
+    "Arugula",
+    "Roasted Cauliflower",
+    "Jalapeno Slices",
+    "Shredded Beef",
+    "Tomatoes",
+    "Roasted Bell Peppers",
+    "Zucchini",
+    "Eggplant",
+    "Grilled Bell Peppers",
+    "Garlic Alfredo Sauce",
+    "Artichoke Hearts",
+    "Roasted Red Peppers",
+    "Breaded Eggplant Slices",
+    "Taco Sauce",
+    "Seasoned Ground Beef",
+    "Lettuce",
+    "Cheddar Cheese",
+    "Roasted Chicken",
+    "Roasted Garlic",
+    "Pumpkin Puree",
+    "Sage",
+    "Caramelized Onions",
+    "Pepitas",
+    "Ranch Sauce",
+    "Chives",
+    "Shrimp",
+    "Scallops",
+    "Crab Meat",
+    "Green Onions",
+    "Pulled Pork",
+    "Italian Sausage",
+    "Chipotle Sauce",
+    "Black Beans",
+    "Corn",
+    "Salami",
+    "Sun-Dried Tomatoes",
+    "Pine Nuts"
+]
+
+
+Step 1: Transform user request into a dictionnary matching the following format:
+:param preferences: Dictionary containing user preferences, including:
+                        - ingredients_include: List of ingredients the pizza must have.
+                        - ingredients_exclude: List of ingredients the pizza must not have.
+                        - min_rating: Minimum rating the pizza must have.
+                        - max_price: Maximum price for the pizza.
+                        - vegetarian: Boolean indicating vegetarian preference.
+                        - vegan: Boolean indicating vegan preference.
+                        - gluten_free: Boolean indicating gluten-free preference.
+
+Only return the preferences object please in a JSON format
+
+"""
+    messages_to_use = [{"role": "system", "content": systemPrompt}] + messages
     chat_completion = client.chat.completions.create(
-        messages=messages,
-        model="gpt-3.5-turbo",
+        messages=messages_to_use,
+        model="gpt-4-0125-preview",
     )
-    return False
+    return chat_completion.choices[0].message.content
 
 
 question_to_ask = """Anything else"""
@@ -194,9 +297,72 @@ def handle_pizza_messages():
         has_user_expressed_preferences = check_user_preferences_are_done(messages)
         ## if yes, generate the order
         if has_user_expressed_preferences:
-            return {"result": "hello"}
+            result = filter_and_propose_pizzas(messages)
+            return {"result": result}
         else:
             ## if no, ask for more preferences
 
             result = continue_chat_with_user(messages)
             return {"result": result}
+
+
+def filter_pizzas(pizzas, preferences):
+    """
+    Filter a list of pizzas based on user preferences.
+
+    :param pizzas: List of pizza dictionaries.
+    :param preferences: Dictionary containing user preferences, including:
+                        - ingredients_include: List of ingredients the pizza must have.
+                        - ingredients_exclude: List of ingredients the pizza must not have.
+                        - min_rating: Minimum rating the pizza must have.
+                        - max_price: Maximum price for the pizza.
+                        - vegetarian: Boolean indicating vegetarian preference.
+                        - vegan: Boolean indicating vegan preference.
+                        - gluten_free: Boolean indicating gluten-free preference.
+    :return: Filtered list of pizzas.
+    """
+
+    def pizza_matches(pizza, prefs):
+        # Include ingredients check
+        if prefs.get("ingredients_include"):
+            if not all(
+                item in pizza["ingredients"] for item in prefs["ingredients_include"]
+            ):
+                return False
+
+        # Exclude ingredients check
+        if prefs.get("ingredients_exclude"):
+            if any(
+                item in pizza["ingredients"] for item in prefs["ingredients_exclude"]
+            ):
+                return False
+
+        # Rating check
+        if prefs.get("min_rating") and pizza["rating"] < prefs["min_rating"]:
+            return False
+
+        # Price check
+        if prefs.get("max_price") and pizza["price"] > prefs["max_price"]:
+            return False
+
+        # Vegetarian check
+        if (
+            prefs.get("vegetarian") is not None
+            and pizza["vegetarian"] != prefs["vegetarian"]
+        ):
+            return False
+
+        # Vegan check
+        if prefs.get("vegan") is not None and pizza["vegan"] != prefs["vegan"]:
+            return False
+
+        # Gluten-free check
+        if (
+            prefs.get("gluten_free") is not None
+            and pizza["gluten_free"] != prefs["gluten_free"]
+        ):
+            return False
+
+        return True
+
+    return [pizza for pizza in pizzas if pizza_matches(pizza, preferences)]
