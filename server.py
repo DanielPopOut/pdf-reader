@@ -127,7 +127,10 @@ def get_roadmap():
 
         ## format the roadmap
         roadmap = generate_roadmap(body)
+
+        print(roadmap)
         graph = generate_graph(roadmap)
+        print(graph)
         # # render the graph as jpg
         # dot = graphviz.Source(graph)
         # graph_as_jpg = dot.render('roadmap', format='jpeg', view=True)
